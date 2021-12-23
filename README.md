@@ -2,7 +2,8 @@
 The official source-code for the Meower mobile client.
 
 ## Alpha Release
-The alpha release of the Meower mobile client and source-code will be released for Android once this checklist is finished:  
-~~1. Mike adds password authentication back.~~ Done.  
-~~2. Redesign how the JS for the mobile client to make it work with the 4.7 server.~~ Done.   
-  3. Profile page and account settings menu is made.
+The alpha release that is currently public is the first ever version released to the public! There are a lot of features missing and will probably be a lot of bugs, make sure to report any bugs in the Issues tab on this repository!
+
+See this spreadsheet for tested devices and Android versions: https://docs.google.com/spreadsheets/d/1otJu5ldjapSFbOvq3QAWSwFpRmQuhj6y/edit#gid=1175350865
+
+See here for plans for the future and what is currently being worked on: https://trello.com/b/Mkz1vJJM/meowermobile

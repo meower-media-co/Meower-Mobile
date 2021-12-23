@@ -7,6 +7,7 @@ The alpha release that is currently public is the first ever version released to
 From this repository you can download the .apk file to install Meower onto an Android phone and the source code (.aia) file which can be loaded in Kodular (https://creator.kodular.io/)
 
 See this spreadsheet for tested devices and Android versions: https://docs.google.com/spreadsheets/d/1otJu5ldjapSFbOvq3QAWSwFpRmQuhj6y/
+
 See here for plans for the future and what is currently being worked on: https://trello.com/b/Mkz1vJJM/meowermobile
 
 

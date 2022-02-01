@@ -2,13 +2,11 @@
 The official source-code for the Meower mobile client.
 
 ## Alpha Release
-The alpha release that is currently public is the first ever version released to the public! There are a lot of features missing and will probably be a lot of bugs, make sure to report any bugs in the Issues tab on this repository!
+Currently Meower Mobile is unavailable to use! This is due to a lot of features being updated in Beta 5, I am trying to get Mobile 0.5 working as soon as I can.
 
 From this repository you can download the .apk file to install Meower onto an Android phone and the source code (.aia) file which can be loaded in Kodular (https://creator.kodular.io/)
 
 See this spreadsheet for tested devices and Android versions: https://docs.google.com/spreadsheets/d/1otJu5ldjapSFbOvq3QAWSwFpRmQuhj6y/
-
-See here for plans for the future and what is currently being worked on: https://trello.com/b/Mkz1vJJM/meowermobile
 
 
 ## Note when installing

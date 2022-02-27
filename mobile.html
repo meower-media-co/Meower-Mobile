@@ -53,57 +53,32 @@
   }
   var url = 'wss://server.meower.org'
   var cljs = new CloudlinkJS(url);
-  var posts = [];
-  var gotten_posts = {};
+  var username = null
   window.cljs = cljs;
   cljs.on("data", (data) => {
-    if (data.val.mode == "auth") {
-      var username = data.val.payload.username
-      cljs.send({cmd: "setid", val: username});
-      cljs.send({cmd: "direct", id: "", val: {cmd: "get_profile", val: username}});
-      cljs.send({cmd: "direct", id: "", val: {cmd: "get_home", val: ""}});
-      console.log(String(JSON.stringify({cmd: "internal", val: "authed"})));
+    if (data.cmd == "ulist") {
+      window.ulist = data.val.split(";").slice(0, -1)
+      cljs.send({cmd: "direct", val: {cmd: "get_peak_users", val: ""}})
     };
-    if (data.val.mode == "home") {
-      posts = data.val.payload.split(";");
-      if (posts.length < 1) {
-        console.log(String(JSON.stringify({cmd: "internal", val: "I: posts_downloaded"})));
-      }
-      for (var i in posts) {
-        if (posts[i] != "") {
-          if (localStorage.getItem(posts[i]) == null) {
-            cljs.send({cmd: "direct", id: "", val: {cmd: "get_post", val: posts[i]}});
-          } else {
-            gotten_posts[posts[i]] = localStorage.getItem(posts[i]);
-            if (Object.keys(gotten_posts).length == posts.length-1) {
-              for (var i in posts) {
-                if (posts[i] != ""){
-                  console.log(String(JSON.stringify({cmd: "new_post", val: gotten_posts[posts[i]]})));
-                }
-              }
-              console.log(String(JSON.stringify({cmd: "internal", val: "I: posts_downloaded"})));
-            }
-          }
-        }
-      }
+    if (data.cmd == "statuscode") {
+      if (data.listener == "moderation") {
+        console.log(String(JSON.stringify({cmd: "alert", val: data.val})))
+      };
+    };
+    if (data.val.mode == "peak") {
+      console.log(String(JSON.stringify({cmd: "users", val: `There are currently ${ulist.length} user(s) online. So far, the most users online were ${data.val.payload.count} on ${data.val.payload.timestamp.mo}/${data.val.payload.timestamp.d}/${data.val.payload.timestamp.y} @ ${data.val.payload.timestamp.h}:${data.val.payload.timestamp.mi}:${data.val.payload.timestamp.s}`})))
     }
+    if (data.val.mode == "auth") {
+      cljs.send({cmd: "direct", id: "", val: {cmd: "get_profile", val: data.val.payload.username}});
+      cljs.send({cmd: "direct", id: "", val: {cmd: "get_home", val: ""}});
+      console.log(String(JSON.stringify({cmd: "internal", val: "I: authed"})));
+    };
     if (data.val.mode == "profile") {
-      console.log(String(JSON.stringify({cmd: "theme", val: data.val.payload.user_settings.theme})));
-      console.log(String(JSON.stringify({cmd: "debug", val: data.val.payload.user_settings.debug})));
-      console.log(String(JSON.stringify({cmd: "pfp", val: data.val.payload.user_data.pfp_data})));
-    }
-    if (data.val.mode == "post") {
-      gotten_posts[data.val.payload.post_id] = data.val.payload;
-      localStorage.setItem(data.val.payload.post_id, String(JSON.stringify(gotten_posts[data.val.payload.post_id])));
-      if (Object.keys(gotten_posts).length == posts.length-1) {
-        for (var i in posts) {
-          if (posts[i] != ""){
-            console.log(String(JSON.stringify({cmd: "new_post", val: gotten_posts[posts[i]]})));
-          }
-        }
-        console.log(String(JSON.stringify({cmd: "internal", val: "I: posts_downloaded"})));
+      if (Object.keys(data.val.payload).includes("theme")) {
+        data.val.payload.cmd = "internal-settings"
+        console.log(String(JSON.stringify(data.val.payload)));
       }
-    }
+    };
     console.log(String(JSON.stringify(data)));
   });
   cljs.on("opened", () => {
@@ -117,27 +92,52 @@
   function ping() {
     cljs.send({cmd: "direct", id: "", val: {cmd: "ping", val: ""}});
   };
-  function login(ip, trust, u, p) {
+  async function login(u, p) {
+    username = u;
+    ip = await (await fetch('https://api.meower.org/ip')).text();
+    cljs.send({cmd: "direct", id: "", val:{cmd: "version_chk", val: "mobile-alpha-0.5-dev"}});
     cljs.send({cmd:"direct",val:{cmd:"type",val:"mobile"}});
     cljs.send({cmd: "direct", val: {cmd: "ip", val: ip}});
-    cljs.send({cmd: "direct", id: "", val: trust});
+    cljs.send({cmd: "direct", id: "", val: "meower"});
     cljs.send({cmd:"direct", id: "", val:{cmd:"authpswd",val:{username: u, pswd: p}}});
   };
-  function create_acc() {
-    cljs.send({cmd: "setid", val: '{{username}}'});
-    cljs.send({cmd:"direct", id: "", val:{cmd:"gen_account",val: '{{password}}'}});
-    cljs.send({cmd:"direct", id: "", val:{cmd:"authpswd",val:{username: '{{username}}', pswd: '{{password}}'}}});
-    setTimeout(function(){
-      console.log(String(JSON.stringify({cmd: "internal", val: "created_acc"})));
-    }, 2000);
+  async function create_acc(u, p) {
+    ip = await (await fetch('https://api.meower.org/ip')).text();
+    cljs.send({cmd: "direct", id: "", val:{cmd: "version_chk", val: "mobile-alpha-0.5-dev"}});
+    cljs.send({cmd:"direct",val:{cmd:"type",val:"mobile"}});
+    cljs.send({cmd: "direct", val: {cmd: "ip", val: ip}});
+    cljs.send({cmd: "direct", id: "", val: "meower"});
+    cljs.send({cmd:"direct", id: "", val:{cmd:"gen_account",val: p}});
   };
+  function get_post(post_id) {
+    cljs.send({cmd: "direct", id: "", val: {cmd: "get_post", val: post_id}});
+  };
+  function get_profile(user_id) {
+    cljs.send({cmd: "direct", id: "", val: {cmd: "get_profile", val: user_id}});
+  }
   function refresh_home() {
     cljs.send({cmd: "direct", id: "", val: {cmd: "get_home", val: ""}});
   };
-  function new_post() {
-    text = prompt("New Post");
-    if (text != null) {
-      cljs.send({cmd: "direct", id: "", val: {cmd: "post_home", val: text}});
-    }
+  function new_post(text) {
+    var text = text.replaceAll("%%1", "`")
+    cljs.send({cmd: "direct", id: "", val: {cmd: "post_home", val: text}});
+  };
+  function clear_home() {
+    cljs.send({cmd: "direct", val: {cmd: "clear_home", val: ""}, listener: "moderation"});
+  };
+  function kick(user) {
+    cljs.send({cmd: "direct", val: {cmd: "kick", val: user}, listener: "moderation"});
+  };
+  function ban(user) {
+    cljs.send({cmd: "direct", val: {cmd: "ban", val: user}, listener: "moderation"});
+  };
+  function ban_ip(user) {
+    cljs.send({cmd: "direct", val: {cmd: "ip_ban", val: user}, listener: "moderation"});
+  };
+  function pardon(user) {
+    cljs.send({cmd: "direct", val: {cmd: "pardon", val: user}, listener: "moderation"});
+  };
+  function pardon_ip(user) {
+    cljs.send({cmd: "direct", val: {cmd: "ip_pardon", val: user}, listener: "moderation"});
   };
 </script>

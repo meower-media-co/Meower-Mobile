@@ -2,7 +2,7 @@
 The official source-code for the Meower mobile client.
 
 ## Alpha Release
-Currently Meower Mobile is unavailable to use! This is due to a lot of features being updated in Beta 5, I am trying to get Mobile 0.5 working as soon as I can.
+The version that is currently live on GitHub is the last 0.x version of Mewoer Mobile and is likely the last one before Meower rewrite. Support will not be given for the current client, it's only for people who really need Meower on Android. It doesn't have very many features and has some bugs.
 
 From this repository you can download the .apk file to install Meower onto an Android phone and the source code (.aia) file which can be loaded in Kodular (https://creator.kodular.io/)
 
